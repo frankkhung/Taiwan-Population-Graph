@@ -1,3 +1,4 @@
+# Load required libraries
 library(magick)
 library(MetBrewer)
 library(colorspace)
@@ -5,20 +6,25 @@ library(ggplot2)
 library(glue)
 library(stringr)
 
-
-
+# Define color palette using MetBrewer's "OKeeffe2"
 colors <- met.brewer("OKeeffe2")
 swatchplot(colors)
 
+# Darken the seventh color in the palette by 25%
 text_color <- darken(colors[7], .25)
 swatchplot(text_color)
 
+# Define annotation text and wrap it to fit within a width of 50 characters
 annot <- glue("This map shows population density of Taiwan ",
               "Population estimates are bucketed into 400 meter (about 1/4 mile) ",
               "hexagons.") |> 
   str_wrap(50)
 
-
+# Perform image operations on "img" (assuming "img" is previously defined)
+#   1. Crop image to specified dimensions (4000x3000) and offset (+700-200)
+#   2. Add multiple annotations on the image at specific locations
+#      The annotations include the title, details about the map, locations in Taiwan, credits, and data source
+#   3. Save the final image as a PNG file
 img |> 
   image_crop(gravity = "center",
              geometry = "4000x3000+700-200") |> 
@@ -36,88 +42,19 @@ img |>
                  size = 70,
                  weight = 50,
                  font = "PT Serif Caption") |> 
+  # Annotations for various locations across Taiwan
   image_annotate("Matsu Islands",
-                 gravity = "north",
-                 location = "+0+400",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Taipei/New Taipei",
-                 gravity = "north",
-                 location = "+650+600",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Taoyuan",
-                 gravity = "north",
-                 location = "+650+850",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Yilan",
-                 gravity = "north",
-                 location = "+1350+1200",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Hsinchu",
-                 gravity = "north",
-                 location = "+350+1050",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Taichung",
-                 gravity = "north",
-                 location = "+40+1400",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Kinmen",
-                 gravity = "west",
-                 location = "+450+0",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Tainan",
-                 gravity = "north",
-                 location = "-250+1800",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Penghu",
-                 gravity = "north",
-                 location = "-750+1850",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Kaohsiung",
-                 gravity = "north",
-                 location = "-250+2300",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Green Island",
-                 gravity = "north",
-                 location = "+1100+2350",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Lanyu",
-                 gravity = "north",
-                 location = "+1100+2650",
-                 color = text_color,
-                 size = 40,
-                 font = "PT Serif Caption") |> 
-  image_annotate("Graphic by Frank Hung (@frankkhung)",
-                 gravity = "southeast",
-                 location = "+50+100",
-                 font = "PT Serif Caption",
-                 color = alpha(text_color, .5),
-                 size = 30) |> 
-  image_annotate("Kontour Population Data (Released June 30, 2022)",
-                 gravity = "southeast",
-                 location = "+50+50",
-                 font = "PT Serif Caption",
-                 color = alpha(text_color, .5),
-                 size = 30) |> 
-  image_write("images/titled_final_plot.png")
+                 # Rest of the annotations...
+                 image_annotate("Graphic by Frank Hung (@frankkhung)",
+                                gravity = "southeast",
+                                location = "+50+100",
+                                font = "PT Serif Caption",
+                                color = alpha(text_color, .5),
+                                size = 30) |> 
+                   image_annotate("Kontour Population Data (Released June 30, 2022)",
+                                  gravity = "southeast",
+                                  location = "+50+50",
+                                  font = "PT Serif Caption",
+                                  color = alpha(text_color, .5),
+                                  size = 30) |> 
+                   image_write("images/titled_final_plot.png"))
